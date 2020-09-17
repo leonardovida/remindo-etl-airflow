@@ -7,6 +7,7 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 import configparser
+import json
 
 from airflow import DAG
 from airflow.contrib.hooks.ssh_hook import SSHHook
@@ -60,7 +61,7 @@ def _is_file(directory, name):
 
 def fetchdata():
     """Main function for fetching Remindo data."""
-    logging.debug("Creating Remindo client.")
+    logging.info("Creating Remindo client.")
     rclient = client.RemindoClient(
         config["REMINDOKEYS"]["UUID"],
         config["REMINDOKEYS"]["SECRET"],
@@ -70,12 +71,12 @@ def fetchdata():
     # Set the folder where the data is going to go land initially
     working_directory = config["DATA_DIR_PATH"]["PATH"]
 
-    logging.debug("Fetching data from {0}.".format(config["DATE"]["SINCE"]))
-    logging.debug(f"Execution started at {datetime.now()}")
+    logging.info("Fetching data from {0}.".format(config["DATE"]["SINCE"]))
+    logging.info(f"Execution started at {datetime.now()}")
 
     if _is_file(working_directory, "items.csv"):
         try:
-            logging.debug("Found items.csv")
+            logging.info("Found items.csv")
             r = _open_from_temp(working_directory, "recipe_id_list")
             m = _open_from_temp(working_directory, "moment_id_list")
             rm = _open_from_temp_dict(working_directory, "recipe_moment_id_dict")
@@ -95,18 +96,18 @@ def fetchdata():
                 recipe_moment_id_dict=rm,
             )
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logging.info("Finished retrieving reliability")
         except KeyError as e:
             logging.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logging.info("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
             logging.exception("A exception occured: ", e)
 
     elif _is_file(working_directory, "stats.csv"):
         try:
-            logging.debug("Found stats.csv.")
+            logging.info("Found stats.csv.")
             r = _open_from_temp(working_directory, "recipe_id_list")
             m = _open_from_temp(working_directory, "moment_id_list")
             rm = _open_from_temp_dict(working_directory, "recipe_moment_id_dict")
@@ -122,13 +123,13 @@ def fetchdata():
                 recipe_moment_id_dict=rm,
             )
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logging.info("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logging.info("Finished retrieving reliability")
         except KeyError as e:
             logging.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logging.info("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
             logging.exception("A exception occured: ", e)
@@ -139,7 +140,7 @@ def fetchdata():
         and _is_file(working_directory, "recipe_moment_id_dict.json")
     ):
         try:
-            logging.debug("Found all id lists.")
+            logging.info("Found all id lists.")
             r = _open_from_temp(working_directory, "recipe_id_list")
             m = _open_from_temp(working_directory, "moment_id_list")
             rm = _open_from_temp_dict(working_directory, "recipe_moment_id_dict")
@@ -155,22 +156,22 @@ def fetchdata():
                 recipe_moment_id_dict=rm,
             )
             rcollector.fetch_stats_data()
-            logging.debug("Finished retrieving stats")
+            logging.info("Finished retrieving stats")
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logging.info("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logging.info("Finished retrieving reliability")
         except KeyError as e:
             logging.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logging.info("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
             logging.exception("A exception occured: ", e)
 
     elif _is_file(working_directory, "recipe_id_list.txt"):
         try:
-            logging.debug("Found recipe id list.")
+            logging.info("Found recipe id list.")
             r = _open_from_temp(working_directory, "recipe_id_list")
             rcollector = collectdata.RemindoCollect(
                 rclient=rclient,
@@ -182,23 +183,23 @@ def fetchdata():
             )
 
             rcollector.fetch_moments()
-            logging.debug("Finished retrieving moments")
+            logging.info("Finished retrieving moments")
             rcollector.fetch_stats_data()
-            logging.debug("Finished retrieving stats")
+            logging.info("Finished retrieving stats")
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logging.info("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logging.info("Finished retrieving reliability")
         except KeyError as e:
             logging.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logging.info("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
             logging.exception("A exception occured: ", e)
     else:
         try:
-            logging.debug("No id lists found, starting from studies.")
+            logging.info("No id lists found, starting from studies.")
             rcollector = collectdata.RemindoCollect(
                 rclient=rclient,
                 data_directory=working_directory,
@@ -207,43 +208,44 @@ def fetchdata():
                 from_date=config["DATE"]["FROM"],
             )
             rcollector.fetch_studies_recipes()
-            logging.debug("Finished retrieving studies")
+            logging.info("Finished retrieving studies")
             rcollector.fetch_recipes()
-            logging.debug("Finished retrieving recipes")
+            logging.info("Finished retrieving recipes")
             rcollector.fetch_moments()
-            logging.debug("Finished retrieving moments")
+            logging.info("Finished retrieving moments")
             rcollector.fetch_stats_data()
-            logging.debug("Finished retrieving stats")
+            logging.info("Finished retrieving stats")
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logging.info("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logging.info("Finished retrieving reliability")
         except KeyError as e:
             logging.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logging.info("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
             logging.exception("A exception occured: ", e)
-    logging.debug("Execution ended.")
+    logging.info("Execution ended.")
 
 
 default_args = {
     'owner': 'remindo',
     'depends_on_past': True,
-    'start_date' : datetime(2020, 9, 11),
+    'start_date' : datetime(2020, 9, 16),
     'email_on_failure': True,
     'email_on_retry': True,
     'retries': 10,
     'retry_delay': timedelta(minutes=1),
-    'catchup': True
+    #To setup only in production
+    'catchup': False
 }
 
 dag = DAG(dag_id='remindo_api_test',
           default_args=default_args,
           description='Load and Transform data from landing zone to processed zone. Populate data from Processed zone to remindo Warehouse.',
-          schedule_interval=timedelta(minutes=10),
-          max_active_runs = 1
+          schedule_interval=timedelta(minutes=1),
+          max_active_runs=1
 )
 
 # start_operator = DummyOperator(
@@ -251,7 +253,7 @@ dag = DAG(dag_id='remindo_api_test',
 #     dag=dag
 # )
 
-retrieve_from_api = PythonOperator(
+retrieve_data = PythonOperator(
     task_id='retrieve_data',
     #provide_context=True,
     python_callable=fetchdata,
@@ -271,4 +273,4 @@ retrieve_from_api = PythonOperator(
 #     dag=dag
 # )
 
-retrieve_from_api
+retrieve_data

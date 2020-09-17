@@ -96,6 +96,11 @@ LOGGING_CONFIG: Dict[str, Any] = {
             'level': LOG_LEVEL,
             'propagate': False,
         },
+        'airflow.contrib': {
+            'handlers': bucket_handler,
+            'level': LOG_LEVEL,
+            'propagate': True,
+        },
         'flask_appbuilder': {
             'handler': ['console'],
             'level': FAB_LOG_LEVEL,
