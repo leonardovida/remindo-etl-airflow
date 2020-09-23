@@ -1,6 +1,8 @@
 # Project Specific
 airflow.db
+/airflow.db
 logs/**/*
+logs/**
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
