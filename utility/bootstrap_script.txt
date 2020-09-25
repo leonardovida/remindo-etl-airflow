@@ -1,0 +1,18 @@
+sudo pip install -U \
+  boto              \
+  ciso8601          \
+  ujson             \
+  workalendar
+                                                                                        
+export PYSPARK_DRIVER_PYTHON=python3
+export PYSPARK_PYTHON=python3
+  
+# Installing Oracle_cx
+
+# ssh to DWH
+ssh ods@link "cd /home/hadoop/remindo-etl-pipeline/src;export PYSPARK_DRIVER_PYTHON=python3;export PYSPARK_PYTHON=python3;spark-submit --master yarn remindo_driver.py;"
+
+
+
+
+

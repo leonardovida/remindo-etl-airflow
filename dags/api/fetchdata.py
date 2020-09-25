@@ -51,7 +51,7 @@ def _is_file(directory, name):
 
 def main():
     """Main function for fetching Remindo data."""
-    logging.debug("Creating Remindo client.")
+    logger.debug("Creating Remindo client.")
     rclient = client.RemindoClient(
         config["REMINDOKEYS"]["UUID"],
         config["REMINDOKEYS"]["SECRET"],
@@ -61,12 +61,12 @@ def main():
     # Set the folder where the data is going to go land initially
     working_directory = config["DATA_DIR_PATH"]["PATH"]
 
-    logging.debug("Fetching data from {0}.".format(config["DATE"]["SINCE"]))
-    logging.debug(f"Execution started at {datetime.now()}")
+    logger.debug("Fetching data from {0}.".format(config["DATE"]["SINCE"]))
+    logger.debug(f"Execution started at {datetime.now()}")
 
     if _is_file(working_directory, "items.csv"):
         try:
-            logging.debug("Found items.csv")
+            logger.debug("Found items.csv")
             r = _open_from_temp(working_directory, "recipe_id_list")
             m = _open_from_temp(working_directory, "moment_id_list")
             rm = _open_from_temp_dict(working_directory, "recipe_moment_id_dict")
@@ -86,18 +86,18 @@ def main():
                 recipe_moment_id_dict=rm,
             )
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logger.debug("Finished retrieving reliability")
         except KeyError as e:
-            logging.exception("MAIN ", e)
+            logger.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logger.debug("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
-            logging.exception("A exception occured: ", e)
+            logger.exception("A exception occured: ", e)
 
     elif _is_file(working_directory, "stats.csv"):
         try:
-            logging.debug("Found stats.csv.")
+            logger.debug("Found stats.csv.")
             r = _open_from_temp(working_directory, "recipe_id_list")
             m = _open_from_temp(working_directory, "moment_id_list")
             rm = _open_from_temp_dict(working_directory, "recipe_moment_id_dict")
@@ -113,16 +113,16 @@ def main():
                 recipe_moment_id_dict=rm,
             )
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logger.debug("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logger.debug("Finished retrieving reliability")
         except KeyError as e:
-            logging.exception("MAIN ", e)
+            logger.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logger.debug("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
-            logging.exception("A exception occured: ", e)
+            logger.exception("A exception occured: ", e)
 
     elif (
         _is_file(working_directory, "recipe_id_list.txt")
@@ -130,7 +130,7 @@ def main():
         and _is_file(working_directory, "recipe_moment_id_dict.json")
     ):
         try:
-            logging.debug("Found all id lists.")
+            logger.debug("Found all id lists.")
             r = _open_from_temp(working_directory, "recipe_id_list")
             m = _open_from_temp(working_directory, "moment_id_list")
             rm = _open_from_temp_dict(working_directory, "recipe_moment_id_dict")
@@ -146,22 +146,22 @@ def main():
                 recipe_moment_id_dict=rm,
             )
             rcollector.fetch_stats_data()
-            logging.debug("Finished retrieving stats")
+            logger.debug("Finished retrieving stats")
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logger.debug("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logger.debug("Finished retrieving reliability")
         except KeyError as e:
-            logging.exception("MAIN ", e)
+            logger.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logger.debug("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
-            logging.exception("A exception occured: ", e)
+            logger.exception("A exception occured: ", e)
 
     elif _is_file(working_directory, "recipe_id_list.txt"):
         try:
-            logging.debug("Found recipe id list.")
+            logger.debug("Found recipe id list.")
             r = _open_from_temp(working_directory, "recipe_id_list")
             rcollector = collectdata.RemindoCollect(
                 rclient=rclient,
@@ -173,23 +173,23 @@ def main():
             )
 
             rcollector.fetch_moments()
-            logging.debug("Finished retrieving moments")
+            logger.debug("Finished retrieving moments")
             rcollector.fetch_stats_data()
-            logging.debug("Finished retrieving stats")
+            logger.debug("Finished retrieving stats")
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logger.debug("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logger.debug("Finished retrieving reliability")
         except KeyError as e:
-            logging.exception("MAIN ", e)
+            logger.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logger.debug("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
-            logging.exception("A exception occured: ", e)
+            logger.exception("A exception occured: ", e)
     else:
         try:
-            logging.debug("No id lists found, starting from studies.")
+            logger.debug("No id lists found, starting from studies.")
             rcollector = collectdata.RemindoCollect(
                 rclient=rclient,
                 data_directory=working_directory,
@@ -198,27 +198,27 @@ def main():
                 from_date=config["DATE"]["FROM"],
             )
             rcollector.fetch_studies_recipes()
-            logging.debug("Finished retrieving studies")
+            logger.debug("Finished retrieving studies")
             rcollector.fetch_recipes()
-            logging.debug("Finished retrieving recipes")
+            logger.debug("Finished retrieving recipes")
             rcollector.fetch_moments()
-            logging.debug("Finished retrieving moments")
+            logger.debug("Finished retrieving moments")
             rcollector.fetch_stats_data()
-            logging.debug("Finished retrieving stats")
+            logger.debug("Finished retrieving stats")
             rcollector.fetch_item_data()
-            logging.debug("Finished retrieving items")
+            logger.debug("Finished retrieving items")
             rcollector.fetch_reliability()
-            logging.debug("Finished retrieving reliability")
+            logger.debug("Finished retrieving reliability")
         except KeyError as e:
-            logging.exception("MAIN ", e)
+            logger.exception("MAIN ", e)
         try:
-            logging.debug("Deleting data lists.")
+            logger.debug("Deleting data lists.")
             rcollector.reset_data_lists()
         except Exception as e:
-            logging.exception("A exception occured: ", e)
-    logging.debug("Execution ended.")
+            logger.exception("A exception occured: ", e)
+    logger.debug("Execution ended.")
 
 
 if __name__ == "__main__":
     main()
-    logging.debug("Finished data retrival. Exiting.")
+    logger.debug("Finished data retrival. Exiting.")

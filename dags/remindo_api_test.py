@@ -230,28 +230,27 @@ def fetchdata():
 
 
 default_args = {
-    'owner': 'remindo',
+    'owner': 'airflow',
     'depends_on_past': True,
     'start_date' : datetime(2020, 9, 16),
-    'email_on_failure': True,
-    'email_on_retry': True,
+    "email": ["l.j.vida@uu.nl"],
+    'email_on_failure': False,
+    'email_on_retry': False,
     'retries': 10,
-    'retry_delay': timedelta(minutes=1),
-    #To setup only in production
-    'catchup': False
+    'retry_delay': timedelta(minutes=5),
+    'catchup': False #To setup only in production
 }
 
-dag = DAG(dag_id='remindo_api_test',
+dag_name = 'extract_pipeline'
+
+dag = DAG(dag_id=dag_name,
           default_args=default_args,
-          description='Load and Transform data from landing zone to processed zone. Populate data from Processed zone to remindo Warehouse.',
-          schedule_interval=timedelta(minutes=1),
+          description='Extract pipeline from Remindo to landing zone',
+          schedule_interval=timedelta(minutes=5),
           max_active_runs=1
 )
 
-# start_operator = DummyOperator(
-#     task_id='Begin_execution',
-#     dag=dag
-# )
+start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 retrieve_data = PythonOperator(
     task_id='retrieve_data',
@@ -260,17 +259,6 @@ retrieve_data = PythonOperator(
     dag=dag
 )
 
-#emrsshHook= SSHHook(ssh_conn_id='emr_ssh_connection')
-
-# jobOperator = SSHOperator(
-#     task_id="RemindoETLJob",
-#     command='cd /Users/leonardovida/dev/remindo-etl-pipeline/src;python remindo_driver.py;',
-#     ssh_hook=emrsshHook,
-#     dag=dag)
-
-# end_operator = DummyOperator(
-#     task_id='Stop_execution',
-#     dag=dag
-# )
+end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 retrieve_data
