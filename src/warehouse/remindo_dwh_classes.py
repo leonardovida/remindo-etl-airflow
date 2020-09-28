@@ -1,13 +1,16 @@
 # remindo_dwh_classes
-from time import time
-from datetime import datetime
-from sqlalchemy import *
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Date, Float, String, Integer, Boolean, Column
+from sqlalchemy import ForeignKey, Text
+from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Sequence
 
 from .remindo_dwh_base import Base
+
+"""
+TODO: Improve the naming of the arguments in the API and then transfer
+them here
+"""
+
 
 class Cluster(Base):
     __tablename__ = 'clusters'
@@ -17,9 +20,10 @@ class Cluster(Base):
     name = Column(String(200))
     load_date = Column(Date)
     job_run_id = Column(Integer)
-    
+
     def __repr__(self):
-        return "<Study(id='%s', name='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Study(id='%s', name='%s', \
+            load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.name,
             self.load_date,
@@ -39,10 +43,10 @@ class Study(Base):
     edition_descr = Column(String(200))
     source_edition_id = Column(Integer)
     source_study_id = Column(Integer)
-    #cluster_id = Column(Integer, foreign_key=True, nullable=False)
-    api_call_params_complete = Column(Boolean)
-    api_call_params_since = Column(Date)
-    
+    # cluster_id = Column(Integer, foreign_key=True, nullable=False)
+    apicall_complete = Column(Boolean)
+    apicall_since = Column(Date)
+
     recipes = relationship("Recipe", back_populates='study')
     moments = relationship("Moment", back_populates='study')
 
@@ -50,7 +54,8 @@ class Study(Base):
     job_run_id = Column(Integer)
 
     def __repr__(self):
-        return "<Study(id='%s', name='%s', code='%s', record_create_timestamp='%s')>" % (
+        return "<Study(id='%s', name='%s', \
+            code='%s', record_create_timestamp='%s')>" % (
             self.id,
             self.name,
             self.code,
@@ -58,10 +63,11 @@ class Study(Base):
             # self.job_run_id
         )
 
+
 class Recipe(Base):
     __tablename__ = 'recipes'
     __table_args__ = {'schema': 'staging_schema'}
-    
+
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(200))
     code = Column(String(200))
@@ -86,32 +92,33 @@ class Recipe(Base):
     exam_round_grade_decimals = Column(String(10))
     bonuspoints = Column(Boolean)
     extra_time = Column(Boolean)
-    api_call_params_since = Column(Float)
-    
+    apicall_since = Column(Float)
+
     # If null there are problems
-    api_call_params_study_id = Column(String(50))
-    api_call_params_full = Column(String(10))
+    apicall_study_id = Column(String(50))
+    apicall_full = Column(String(10))
 
     # To delete
-    recipe_id = Column(Integer)
-    study_name = Column(String(200))
+    apicall_recipe_id = Column(Integer)
+    apicall_study_name = Column(String(200))
 
     study = relationship("Study", back_populates='recipes')
     moments = relationship("Moment", back_populates='recipe')
     moments_results = relationship("MomentResult", back_populates='recipe')
     reliabilities = relationship("Reliability", back_populates='recipe')
-    
+
     stats = relationship("Stat")
     items = relationship("Item")
 
     # Do I have to do something with this?
     study_id = Column(Integer, ForeignKey(Study.id))
 
-    load_date = Column(String(50))
+    record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
 
     def __repr__(self):
-        return "<Recipe(id='%s', name='%s', code='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Recipe(id='%s', name='%s', \
+            code='%s', load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.name,
             self.code,
@@ -119,10 +126,11 @@ class Recipe(Base):
             self.job_run_id
         )
 
+
 class Moment(Base):
     __tablename__ = 'moments'
     __table_args__ = {'schema': 'staging_schema'}
-    
+
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(200))
     caesura = Column(String(1000))
@@ -145,13 +153,15 @@ class Moment(Base):
     show_result_delay = Column(Integer)
     show_result_delay_type = Column(String(10))
 
-    api_call_params_from = Column(String(10))
-    api_call_recipe_id = Column(Integer)
-    
+    apicall_from = Column(String(10))
+    apicall_recipe_id = Column(Integer)
+
     study = relationship("Study", back_populates='moments')
     recipe = relationship("Recipe", back_populates='moments')
-    moment_results = relationship("MomentResult", uselist=False, back_populates='moment')
-    reliability = relationship("Reliability", uselist=False, back_populates='moment')
+    moment_results = relationship(
+        "MomentResult", uselist=False, back_populates='moment')
+    reliability = relationship(
+        "Reliability", uselist=False, back_populates='moment')
     stats = relationship("Stat")
     items = relationship("Item")
 
@@ -159,11 +169,12 @@ class Moment(Base):
     study_name = Column(String(100))
     recipe_id = Column(Integer, ForeignKey(Recipe.id))
 
-    load_date = Column(Date, nullable=False)
+    record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
 
     def __repr__(self):
-        return "<Moment(id='%s', name='%s', code='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Moment(id='%s', name='%s', \
+            code='%s', load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.name,
             self.code,
@@ -171,10 +182,11 @@ class Moment(Base):
             self.job_run_id
         )
 
+
 class MomentResult(Base):
     __tablename__ = 'moments_results'
     __table_args__ = {'schema': 'staging_schema'}
-    
+
     id = Column(Integer, primary_key=True, nullable=False)
     subscription_id = Column(Integer, nullable=False)
     user_id = Column(Integer)
@@ -206,6 +218,8 @@ class MomentResult(Base):
     score_type = Column(String(50))
     grade_formatted = Column(Boolean)
     can_change = Column(Boolean)
+    apicall_recipe_id = Column(Integer)
+    apicall_moment_id = Column(Integer)
 
     recipe = relationship("Recipe", back_populates='moments_results')
     moment = relationship("Moment", back_populates='moment_results')
@@ -213,18 +227,19 @@ class MomentResult(Base):
     recipe_id = Column(Integer, ForeignKey(Recipe.id))
     moment_id = Column(Integer, ForeignKey(Moment.id))
 
-    load_date = Column(Date, nullable=False)
+    record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
 
-
     def __repr__(self):
-        return "<Moment(id='%s', moment_id='%s', recipe_id='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Moment(id='%s', moment_id='%s', \
+            recipe_id='%s', load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.moment_id,
             self.recipe_id,
             self.load_date,
             self.job_run_id
         )
+
 
 class Reliability(Base):
     __tablename__ = 'reliability'
@@ -242,6 +257,8 @@ class Reliability(Base):
     stdev = Column(Float)
     average = Column(Float)
     max = Column(Integer)
+    apicall_recipe_id = Column(Integer)
+    apicall_moment_id = Column(Integer)
 
     recipe = relationship("Recipe", back_populates='reliabilities')
     moment = relationship("Moment", back_populates='reliability')
@@ -249,11 +266,12 @@ class Reliability(Base):
     recipe_id = Column(Integer, ForeignKey(Recipe.id))
     moment_id = Column(Integer, ForeignKey(Moment.id))
 
-    load_date = Column(Date, nullable=False)
+    record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
 
     def __repr__(self):
-        return "<Moment(id='%s', recipe_id='%s', moment_id='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Moment(id='%s', recipe_id='%s', \
+            moment_id='%s', load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.recipe_id,
             self.moment_id,
@@ -285,20 +303,23 @@ class Stat(Base):
     total = Column(Integer)
     answered = Column(Integer)
 
-    recipe_id = Column(Integer, ForeignKey(Recipe.id))
-    moment_id = Column(Integer, ForeignKey(Moment.id))
+    apicall_recipe_id = Column(Integer, ForeignKey(Recipe.id))
+    apicall_moment_id = Column(Integer, ForeignKey(Moment.id))
 
-    load_date = Column(Date, nullable=False)
+    record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
 
     def __repr__(self):
-        return "<Moment(id='%s', recipe_id='%s', moment_id='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Moment( \
+            id='%s', recipe_id='%s', moment_id='%s', \
+                load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.recipe_id,
             self.moment_id,
             self.load_date,
             self.job_run_id
         )
+
 
 class Item(Base):
     __tablename__ = 'items'
@@ -326,14 +347,18 @@ class Item(Base):
     response_candidateResponse = Column(Text)
     response_correctResponse = Column(Text)
 
+    apicall_recipe_id = Column(Integer)
+    apicall_moment_id = Column(Integer)
+
     recipe_id = Column(Integer, ForeignKey(Recipe.id))
     moment_id = Column(Integer, ForeignKey(Moment.id))
 
-    load_date = Column(Date)
+    record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
-    
+
     def __repr__(self):
-        return "<Moment(id='%s', item_identifier='%s', moment_id='%s', recipe_id='%s', load_date='%s', job_run_id='%s')>" % (
+        return "<Moment(id='%s', item_identifier='%s', moment_id='%s', \
+            recipe_id='%s', load_date='%s', job_run_id='%s')>" % (
             self.id,
             self.item_identifier,
             self.moment_id,

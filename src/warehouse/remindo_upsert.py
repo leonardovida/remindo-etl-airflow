@@ -12,14 +12,15 @@ from sqlalchemy.orm import *
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/warehouse_config.cfg"))
 
-staging_schema = config.get('STAGING', 'SCHEMA')
-warehouse_schema = config.get('WAREHOUSE', 'SCHEMA')
+staging_schema = config.get("STAGING", "SCHEMA")
+warehouse_schema = config.get("WAREHOUSE", "SCHEMA")
+
 
 # https://stackoverflow.com/questions/41724658/how-to-do-a-proper-upsert-using-sqlalchemy-on-postgresql
 def upsert_2(engine, schema, table_name, records=[]):
 
     logging.debug(f"Performing upsert on table {table_name}")
-    
+
     metadata = MetaData(schema=schema)
     metadata.bind = engine
 
@@ -32,20 +33,15 @@ def upsert_2(engine, schema, table_name, records=[]):
     stmt = postgresql.insert(table).values(records)
 
     # define dict of non-primary keys for updating
-    update_dict = {
-        c.name: c
-        for c in stmt.excluded
-        if not c.primary_key
-    }
+    update_dict = {c.name: c for c in stmt.excluded if not c.primary_key}
 
     # cover case when all columns in table comprise a primary key
     # in which case, upsert is identical to 'on conflict do nothing.
     if update_dict == {}:
-        warnings.warn('no updateable columns found for table')
+        warnings.warn("no updateable columns found for table")
         # we still wanna insert without errors
-        #insert_ignore(table_name, records)
+        # insert_ignore(table_name, records)
         return None
-
 
     # assemble new statement with 'on conflict do update' clause
     update_stmt = stmt.on_conflict_do_update(
@@ -57,6 +53,7 @@ def upsert_2(engine, schema, table_name, records=[]):
     with engine.connect() as conn:
         result = conn.execute(update_stmt)
         return result
+
 
 def upsert(engine, session, conn, table_name):
     """Upsert values from staging to warehouse"""
@@ -71,7 +68,7 @@ def upsert(engine, session, conn, table_name):
     )
     # Find the columns for the table in staging
     cols_table_staging = [c for c in table_staging.c]
-    
+
     # Select table in warehouse schema
     metadata_warehouse = MetaData(schema="warehouse")
     metadata_warehouse.bind = engine
@@ -88,6 +85,7 @@ def upsert(engine, session, conn, table_name):
     session.execute(ins)
     session.commit()
 
+
 def delete_from(tab1, tab2, session):
     """Delete rows from tab1 using the matching pk from tab2"""
     # Find primary keys
@@ -95,8 +93,6 @@ def delete_from(tab1, tab2, session):
     # tab2_pk = [pk.key for pk in inspect(tab2).primary_key]
 
     # Create delete query
-    delete = tab1.delete().where(
-        tab1.c.id==tab2.c.id
-    )
+    delete = tab1.delete().where(tab1.c.id == tab2.c.id)
     session.execute(delete)
     session.commit()

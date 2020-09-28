@@ -2,6 +2,7 @@
 # from pyspark.sql import functions as fn
 # from pyspark.sql import SparkSession
 import logging.config
+import logging
 import configparser
 from pathlib import Path
 import time
@@ -28,7 +29,7 @@ config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
 
 # Setting up logger, Logger properties are defined in logging.ini file
 logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 def main():
@@ -62,9 +63,9 @@ def main():
 #     for file in files_in_working_zone:
 #         if file in modules.keys():
 #             modules[file]()
-
-    wrd = remindo_warehouse_driver.RemindoWarehouseDriver()
-    wrd.test_conn()
+    
+    # wrd = remindo_warehouse_driver.RemindoWarehouseDriver()
+    # wrd.test_conn()
     # wrd.delete_staging_tables()
     # wrd.setup_staging_tables()
     # wrd.load_staging_tables()

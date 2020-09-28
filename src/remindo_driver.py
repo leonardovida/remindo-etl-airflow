@@ -1,4 +1,4 @@
-#from pyspark.sql import SparkSession
+# from pyspark.sql import SparkSession
 from pathlib import Path
 import time
 import logging
@@ -14,7 +14,7 @@ config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
 
 # Setting up logger, Logger properties are defined in logging.ini file
 logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 # TODO: finish the configuration
 # TODO: Create or eliminate the usage of Spark
@@ -25,9 +25,13 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    #logging.debug("\n\nSetting up Spark Session...")
-    #spark = create_sparksession()
-    rt = RemindoTransform()
+    LANDING_ZONE = config.get("FOLDER", "LANDING_ZONE")
+    WORKING_ZONE = config.get("FOLDER", "WORKING_ZONE")
+    PROCESSED_ZONE = config.get("FOLDER", "PROCESSED_ZONE")
+
+    # logging.debug("\n\nSetting up Spark Session...")
+    # spark = create_sparksession()
+    rt = RemindoTransform(load_path=WORKING_ZONE, save_path=PROCESSED_ZONE)
 
     # Modules in the project
     modules = {
@@ -42,18 +46,20 @@ def main():
     }
 
     logger.info("Copying data from landing zone to working zone")
-    rcm = RemindoCopyModule()
-    rcm.move_data(
-        source_folder=config.get('FOLDER','LANDING_ZONE'),
-        target_folder=config.get('FOLDER', 'WORKING_ZONE')
+    rcm = RemindoCopyModule(
+        landing_zone=LANDING_ZONE,
+        working_zone=WORKING_ZONE,
+        processed_zone=PROCESSED_ZONE,
     )
 
-    files_in_working_zone = rcm.get_files(config.get('FOLDER', 'WORKING_ZONE'))
+    rcm.move_data(source_folder=LANDING_ZONE, target_folder=WORKING_ZONE)
+
+    files_in_working_zone = rcm.get_files(WORKING_ZONE)
 
     # Cleanup processed zone if files available in working zone
     if len([set(files_in_working_zone)]) > 0:
         logger.info("Cleaning up processed zone.")
-        rcm.clean_folder(config.get('FOLDER', 'PROCESSED_ZONE'))
+        rcm.clean_folder(PROCESSED_ZONE)
 
     # If file in the zone, apply transform
     for file in files_in_working_zone:
@@ -61,18 +67,23 @@ def main():
             modules[file]()
 
     logger.info("Waiting before setting up Warehouse")
-    time.sleep(5)
+    time.sleep(2)
 
-    # # Starting warehouse functionality
-    # rwarehouse = RemindoWarehouseDriver()
-    # logging.debug("Setting up staging tables")
-    # rwarehouse.setup_staging_tables()
-    # logging.debug("Populating staging tables")
-    # rwarehouse.load_staging_tables()
-    # logging.debug("Setting up Warehouse tables")
-    # rwarehouse.setup_warehouse_tables()
-    # logging.debug("Performing UPSERT")
+    # Starting warehouse functionality
+    rwarehouse = RemindoWarehouseDriver(
+        landing_zone=LANDING_ZONE,
+        working_zone=WORKING_ZONE,
+        processed_zone=PROCESSED_ZONE,
+    )
+    logger.debug("Setting up staging tables")
+    rwarehouse.setup_staging_tables()
+    logger.debug("Populating staging tables")
+    rwarehouse.load_staging_tables()
+    logger.debug("Setting up Warehouse tables")
+    rwarehouse.setup_warehouse_tables()
+    # logger.debug("Performing UPSERT")
     # rwarehouse.perform_upsert()
+
 
 if __name__ == "__main__":
     main()
