@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Sequence
 
-from .remindo_dwh_base import Base
+from src.warehouse.remindo_dwh_base import Base
 
 """
 TODO: Improve the naming of the arguments in the API and then transfer

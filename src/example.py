@@ -17,10 +17,10 @@ from sqlalchemy.schema import CreateSchema, MetaData
 from sqlalchemy import *
 from sqlalchemy.sql import *
 
-from copy_module import RemindoCopyModule
-from warehouse import remindo_dwh_base
-from warehouse import remindo_dwh_classes
-from warehouse import remindo_warehouse_driver
+from src.copy_module import RemindoCopyModule
+from src.warehouse import remindo_dwh_base
+from src.warehouse import remindo_dwh_classes
+from src.warehouse import remindo_warehouse_driver
 
 #from warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
 

@@ -5,9 +5,9 @@ import logging
 import logging.config
 import configparser
 
-from remindo_transform import RemindoTransform
-from copy_module import RemindoCopyModule
-from warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
+from src.remindo_transform import RemindoTransform
+from src.copy_module import RemindoCopyModule
+from src.warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
@@ -81,8 +81,8 @@ def main():
     rwarehouse.load_staging_tables()
     logger.debug("Setting up Warehouse tables")
     rwarehouse.setup_warehouse_tables()
-    # logger.debug("Performing UPSERT")
-    # rwarehouse.perform_upsert()
+    logger.debug("Performing UPSERT")
+    rwarehouse.perform_upsert()
 
 
 if __name__ == "__main__":

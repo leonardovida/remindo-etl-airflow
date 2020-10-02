@@ -11,9 +11,9 @@ import re
 import os
 
 
-from copy_module import RemindoCopyModule
-from . import remindo_dwh_base
-from .remindo_dwh_classes import (
+from src.copy_module import RemindoCopyModule
+from src.warehouse.remindo_dwh_base import remindo_dwh_base
+from src.warehouse.remindo_dwh_classes import (
     Cluster,
     Reliability,
     Study,
@@ -23,7 +23,7 @@ from .remindo_dwh_classes import (
     Stat,
     Item,
 )
-from . import remindo_upsert
+from src.warehouse.remindo_upsert import remindo_upsert
 
 # import cx_Oracle
 # from sqlalchemy.ext.declarative import declarative_base
