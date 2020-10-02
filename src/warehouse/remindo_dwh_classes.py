@@ -4,11 +4,24 @@ from sqlalchemy import ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Sequence
 
-from src.warehouse.remindo_dwh_base import Base
+#from src.warehouse.remindo_dwh_base import Base
+
+from sqlalchemy.ext.declarative import declarative_base
+
+print("creating Base")
+Base = declarative_base()
 
 """
 TODO: Improve the naming of the arguments in the API and then transfer
 them here
+"""
+
+# Test this
+
+"""
+TODO: in the future add `id`, `load_date` and `job_run_id` 
+to Base by creating a CommonBase as follows:
+Base = declarative_base(cls=CommonBase)
 """
 
 
@@ -47,8 +60,8 @@ class Study(Base):
     apicall_complete = Column(Boolean)
     apicall_since = Column(Date)
 
-    recipes = relationship("Recipe", back_populates='study')
-    moments = relationship("Moment", back_populates='study')
+    recipes = relationship("Recipe", back_populates='study', cascade="all, delete")
+    moments = relationship("Moment", back_populates='study', cascade="all, delete")
 
     record_create_timestamp = Column(Date, nullable=False)
     job_run_id = Column(Integer)
@@ -103,12 +116,12 @@ class Recipe(Base):
     apicall_study_name = Column(String(200))
 
     study = relationship("Study", back_populates='recipes')
-    moments = relationship("Moment", back_populates='recipe')
-    moments_results = relationship("MomentResult", back_populates='recipe')
-    reliabilities = relationship("Reliability", back_populates='recipe')
+    moments = relationship("Moment", back_populates='recipe', cascade="all, delete")
+    moments_results = relationship("MomentResult", back_populates='recipe', cascade="all, delete")
+    reliabilities = relationship("Reliability", back_populates='recipe', cascade="all, delete")
 
-    stats = relationship("Stat")
-    items = relationship("Item")
+    stats = relationship("Stat", cascade="all, delete")
+    items = relationship("Item", cascade="all, delete")
 
     # Do I have to do something with this?
     study_id = Column(Integer, ForeignKey(Study.id))
@@ -159,11 +172,11 @@ class Moment(Base):
     study = relationship("Study", back_populates='moments')
     recipe = relationship("Recipe", back_populates='moments')
     moment_results = relationship(
-        "MomentResult", uselist=False, back_populates='moment')
+        "MomentResult", uselist=False, back_populates='moment', cascade="all, delete")
     reliability = relationship(
-        "Reliability", uselist=False, back_populates='moment')
-    stats = relationship("Stat")
-    items = relationship("Item")
+        "Reliability", uselist=False, back_populates='moment', cascade="all, delete")
+    stats = relationship("Stat", cascade="all, delete")
+    items = relationship("Item", cascade="all, delete")
 
     study_id = Column(Integer, ForeignKey(Study.id))
     study_name = Column(String(100))
@@ -245,10 +258,7 @@ class Reliability(Base):
     __tablename__ = 'reliability'
     __table_args__ = {'schema': 'staging_schema'}
 
-    reliability_id_seq = Sequence('reliability_id_seq', metadata=Base.metadata)
-    id = Column(
-        Integer, reliability_id_seq,
-        server_default=reliability_id_seq.next_value(), primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     alpha = Column(Float)
     sem = Column(Float)
     notes = Column(String(50))
@@ -260,8 +270,8 @@ class Reliability(Base):
     apicall_recipe_id = Column(Integer)
     apicall_moment_id = Column(Integer)
 
-    recipe = relationship("Recipe", back_populates='reliabilities')
-    moment = relationship("Moment", back_populates='reliability')
+    recipe = relationship("Recipe", back_populates='reliabilities', cascade="all, delete")
+    moment = relationship("Moment", back_populates='reliability', cascade="all, delete")
 
     recipe_id = Column(Integer, ForeignKey(Recipe.id))
     moment_id = Column(Integer, ForeignKey(Moment.id))
@@ -284,10 +294,7 @@ class Stat(Base):
     __tablename__ = 'stats'
     __table_args__ = {'schema': 'staging_schema'}
 
-    stat_id_seq = Sequence('stat_id_seq', metadata=Base.metadata)
-    id = Column(
-        Integer, stat_id_seq,
-        server_default=stat_id_seq.next_value(), primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     item_identifier = Column(String(200), nullable=False)
     code = Column(String(200))
     type = Column(String(50))
@@ -325,10 +332,7 @@ class Item(Base):
     __tablename__ = 'items'
     __table_args__ = {'schema': 'staging_schema'}
 
-    item_id_seq = Sequence('item_id_seq', metadata=Base.metadata)
-    id = Column(
-        Integer, item_id_seq,
-        server_default=item_id_seq.next_value(), primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     item_identifier = Column(String(200), nullable=False)
     num_attempts = Column(Integer)
     duration = Column(Integer)
