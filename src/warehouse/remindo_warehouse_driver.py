@@ -1,19 +1,21 @@
-# import csv
-# import collections
-# import sys
-
 from collections import OrderedDict
 import configparser
-from contextlib import contextmanager
 import logging
 from pathlib import Path
 import re
 import os
+import pandas as pd
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
 
+# import cx_Oracle
+# from contextlib import contextmanager
 
+# from src.warehouse.remindo_dwh_base import Base
 from src.copy_module import RemindoCopyModule
-from src.warehouse.remindo_dwh_base import remindo_dwh_base
 from src.warehouse.remindo_dwh_classes import (
+    Base,
     Cluster,
     Reliability,
     Study,
@@ -23,14 +25,7 @@ from src.warehouse.remindo_dwh_classes import (
     Stat,
     Item,
 )
-from src.warehouse.remindo_upsert import remindo_upsert
-
-# import cx_Oracle
-# from sqlalchemy.ext.declarative import declarative_base
-import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+from src.warehouse.remindo_upsert import upsert
 
 logging.config.fileConfig(f"{Path(__file__).parents[1]}/logging.ini")
 logger = logging.getLogger()
@@ -76,6 +71,8 @@ class RemindoWarehouseDriver:
             "postgresql+psycopg2://airflow:airflow@localhost/airflow", echo=True
         )
 
+        Base.metadata.bind = self.engine
+
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
@@ -102,17 +99,17 @@ class RemindoWarehouseDriver:
         # self.con2 = cx_Oracle.connect('hr', 'hrpwd', self.dsn_tns)
         # self._cur = self._con.cursor()
 
-    @contextmanager
-    def session_scope(self):
-        """Provide a transactional scope around a series of operations."""
-        try:
-            yield self.session
-            self.session.commit()
-        except Exception:
-            self.session.rollback()
-            raise
-        finally:
-            self.session.close()
+    # @contextmanager
+    # def session_scope(self):
+    #     """Provide a transactional scope around a series of operations."""
+    #     try:
+    #         yield self.session
+    #         self.session.commit()
+    #     except Exception:
+    #         self.session.rollback()
+    #         raise
+    #     finally:
+    #         self.session.close()
 
     def test_conn(self):
         """Test the connection to the database."""
@@ -123,16 +120,16 @@ class RemindoWarehouseDriver:
         # ATTENTION!
         # Drops all existing tables!!!
         logger.debug("Drop staging tables.")
-        remindo_dwh_base.Base.metadata.drop_all(self.engine)
+        Base.metadata.drop_all(self.engine, checkfirst=True)
 
     def setup_staging_tables(self):
         """Setup the staging database schema."""
         logger.debug("Create staging schema.")
-        remindo_dwh_base.Base.metadata.create_all(self.engine, checkfirst=True)
+        Base.metadata.create_all(self.engine, checkfirst=True)
 
     def load_staging_tables(self):
         """Load the data from csv files to the database."""
-        logger.debug("Populating staging tables")
+        logger.debug("Loading staging tables")
 
         files_in_processed_zone = self.rcm.get_files(self.processed_zone)
 
@@ -159,22 +156,26 @@ class RemindoWarehouseDriver:
                 logger.debug(f"File {file} not found.")
 
     def setup_warehouse_tables(self):
-        logger.debug("Creating schema for warehouse.")
+        logger.debug("Setup schema for warehouse.")
 
         # Change schema from staging to warehouse
         self.conn = self.engine.connect().execution_options(
             schema_translate_map={"staging_schema": "warehouse"}
         )
 
+        # Delete tables
+        logger.debug("Dropping tables for warehouse.")
+        Base.metadata.drop_all(self.conn, checkfirst=True)
         # Create same tables as in staging_schema
-        remindo_dwh_base.Base.metadata.create_all(self.conn, checkfirst=True)
+        logger.debug("Creating tables for warehouse.")
+        Base.metadata.create_all(self.conn, checkfirst=True)
 
     def perform_upsert(self):
         logger.debug("Performing upsert operations.")
         # Upsert operation of each of the tables
         for m, c in self.modules.items():
             try:
-                remindo_upsert.upsert(self.engine, self.session, self.conn, c)
+                upsert(self.engine, self.session, self.conn, c)
             except SQLAlchemyError as e:
                 self.session.rollback()
                 error = str(e.__dict__["orig"])

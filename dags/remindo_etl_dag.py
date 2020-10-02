@@ -7,7 +7,7 @@ from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 
-from src import remindo_driver
+from src.remindo_driver import main
 
 config = configparser.ConfigParser()
 config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")))
@@ -15,7 +15,7 @@ config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")
 default_args = {
     "owner": "airflow",
     "depends_on_past": True,
-    "start_date": datetime(2020, 9, 16),
+    "start_date": datetime(2020, 10, 1),
     "email": ["l.j.vida@uu.nl"],
     "email_on_failure": False,
     "email_on_retry": False,
@@ -44,9 +44,7 @@ start_operator = DummyOperator(task_id="Begin_execution", dag=dag)
 #     dag=dag
 # )
 
-jobOperator = PythonOperator(
-    task_id="TransformLoadJob", python_callable=remindo_driver.main(), dag=dag
-)
+jobOperator = PythonOperator(task_id="TransformLoadJob", python_callable=main, dag=dag)
 
 end_operator = DummyOperator(task_id="Stop_execution", dag=dag)
 

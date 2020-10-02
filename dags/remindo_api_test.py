@@ -3,7 +3,6 @@ import os
 import logging.config
 import logging
 import os.path
-import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 import configparser
@@ -16,17 +15,17 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.postgres_hook import PostgresHook
-#from airflow.operators.remindo_plugin import DataQualityOperator
-#from airflow.operators.remindo_plugin import LoadAnalyticsOperator
-#from helpers import AnalyticsQueries
+import pandas as pd
+
+# from airflow.operators.remindo_plugin import DataQualityOperator
+# from airflow.operators.remindo_plugin import LoadAnalyticsOperator
+# from helpers import AnalyticsQueries
 
 from remindo_api import client
 from remindo_api import collectdata
-from six.moves import input
-import pandas as pd
 
 # Setting up logger, Logger properties are defined in logging.ini file
-logging.config.fileConfig(os.path.join(Path(__file__).parents[1], 'config/logging.ini'))
+logging.config.fileConfig(os.path.join(Path(__file__).parents[1], "config/logging.ini"))
 logger = logging.getLogger(__name__)
 
 # Reading configurations
@@ -35,6 +34,7 @@ config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")
 
 # TODO: use provide_context=True to provide to the fetching of data
 # the updated value of the time!
+
 
 def _open_from_temp(directory, name):
     file = os.path.join(directory, f"{name}.txt")
@@ -230,35 +230,36 @@ def fetchdata():
 
 
 default_args = {
-    'owner': 'airflow',
-    'depends_on_past': True,
-    'start_date' : datetime(2020, 9, 16),
+    "owner": "airflow",
+    "depends_on_past": True,
+    "start_date": datetime(2020, 9, 16),
     "email": ["l.j.vida@uu.nl"],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 10,
-    'retry_delay': timedelta(minutes=5),
-    'catchup': False #To setup only in production
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 10,
+    "retry_delay": timedelta(minutes=5),
+    "catchup": False,  # To setup only in production
 }
 
-dag_name = 'extract_pipeline'
+dag_name = "extract_pipeline"
 
-dag = DAG(dag_id=dag_name,
-          default_args=default_args,
-          description='Extract pipeline from Remindo to landing zone',
-          schedule_interval=timedelta(minutes=5),
-          max_active_runs=1
+dag = DAG(
+    dag_id=dag_name,
+    default_args=default_args,
+    description="Extract pipeline from Remindo to landing zone",
+    schedule_interval=timedelta(minutes=5),
+    max_active_runs=1,
 )
 
-start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
+start_operator = DummyOperator(task_id="Begin_execution", dag=dag)
 
 retrieve_data = PythonOperator(
-    task_id='retrieve_data',
-    #provide_context=True,
+    task_id="retrieve_data",
+    # provide_context=True,
     python_callable=fetchdata,
-    dag=dag
+    dag=dag,
 )
 
-end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+end_operator = DummyOperator(task_id="Stop_execution", dag=dag)
 
 retrieve_data

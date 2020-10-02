@@ -75,13 +75,10 @@ def main():
         working_zone=WORKING_ZONE,
         processed_zone=PROCESSED_ZONE,
     )
-    logger.debug("Setting up staging tables")
+    rwarehouse.delete_staging_tables()
     rwarehouse.setup_staging_tables()
-    logger.debug("Populating staging tables")
     rwarehouse.load_staging_tables()
-    logger.debug("Setting up Warehouse tables")
     rwarehouse.setup_warehouse_tables()
-    logger.debug("Performing UPSERT")
     rwarehouse.perform_upsert()
 
 

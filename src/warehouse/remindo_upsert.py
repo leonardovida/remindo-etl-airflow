@@ -6,7 +6,7 @@ import warnings
 from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.inspection import inspect
-from sqlalchemy import *
+from sqlalchemy import select
 
 
 config = configparser.ConfigParser()
@@ -59,7 +59,8 @@ def delete_from(tab1, tab2, session):
     session.commit()
 
 
-# Adapted from: https://stackoverflow.com/questions/41724658/how-to-do-a-proper-upsert-using-sqlalchemy-on-postgresql
+# Adapted from: https://stackoverflow.com/questions/41724658/how-to-do-a-proper-upsert-\
+# using-sqlalchemy-on-postgresql
 def upsert_2(engine, schema, table_name, records=[]):
 
     logging.debug(f"Performing upsert on table {table_name}")
