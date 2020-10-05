@@ -14,7 +14,7 @@ config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")
 
 default_args = {
     "owner": "airflow",
-    "depends_on_past": True,
+    "depends_on_past": False,
     "start_date": datetime(2020, 10, 1),
     "email": ["l.j.vida@uu.nl"],
     "email_on_failure": False,
@@ -30,22 +30,17 @@ dag_name = "transform_load_pipeline"
 dag = DAG(
     dag_name,
     default_args=default_args,
-    description="Transform and load data from landing zone to processed zone. Populate data from Processed zone to remindo Warehouse.",
+    description="Transform and load data from landing zone to processed zone.\
+        Populate data from Processed zone to remindo Warehouse.",
     # schedule_interval=None,
-    schedule_interval="*/10 * * * *",
+    schedule_interval=timedelta(minutes=5),
     max_active_runs=1,
 )
 
-start_operator = DummyOperator(task_id="Begin_execution", dag=dag)
-
-# jobOperator = BashOperator(
-#     task_id="TransformLoadJob",
-#     bash_command='{{"/Users/leonardovida/airflow/src/TLJob.sh"}}',
-#     dag=dag
-# )
+startOperator = DummyOperator(task_id="BeginExecution", dag=dag)
 
 jobOperator = PythonOperator(task_id="TransformLoadJob", python_callable=main, dag=dag)
 
-end_operator = DummyOperator(task_id="Stop_execution", dag=dag)
+endOperator = DummyOperator(task_id="StopExecution", dag=dag)
 
-start_operator >> jobOperator >> end_operator
+startOperator >> jobOperator >> endOperator

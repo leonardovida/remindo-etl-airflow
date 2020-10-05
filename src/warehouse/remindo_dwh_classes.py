@@ -16,8 +16,6 @@ TODO: Improve the naming of the arguments in the API and then transfer
 them here
 """
 
-# Test this
-
 """
 TODO: in the future add `id`, `load_date` and `job_run_id` 
 to Base by creating a CommonBase as follows:
@@ -270,14 +268,20 @@ class Reliability(Base):
     apicall_recipe_id = Column(Integer)
     apicall_moment_id = Column(Integer)
 
-    recipe = relationship("Recipe", back_populates='reliabilities', cascade="all, delete")
-    moment = relationship("Moment", back_populates='reliability', cascade="all, delete")
+    recipe = relationship(
+        "Recipe",
+        back_populates='reliabilities',
+        cascade="all, delete")
+    moment = relationship(
+        "Moment",
+        back_populates='reliability',
+        cascade="all, delete")
 
     recipe_id = Column(Integer, ForeignKey(Recipe.id))
     moment_id = Column(Integer, ForeignKey(Moment.id))
 
     record_create_timestamp = Column(Date, nullable=False)
-    job_run_id = Column(Integer)
+    job_run_id = Column(String)
 
     def __repr__(self):
         return "<Moment(id='%s', recipe_id='%s', \

@@ -13,7 +13,7 @@ from remindo_api import client
 from remindo_api import collectdata
 
 # Setting up logger, Logger properties are defined in logging.ini file
-logging.config.fileConfig(os.path.join(Path(__file__).parents[1], 'config/logging.ini'))
+logging.config.fileConfig(os.path.join(Path(__file__).parents[1], "config/logging.ini"))
 logger = logging.getLogger(__name__)
 
 # Reading configurations
@@ -61,7 +61,7 @@ def main():
     # Set the folder where the data is going to go land initially
     working_directory = config["DATA_DIR_PATH"]["PATH"]
 
-    logger.debug("Fetching data from {0}.".format(config["DATE"]["SINCE"]))
+    logger.info("Fetching data from {0}.".format(config["DATE"]["SINCE"]))
     logger.debug(f"Execution started at {datetime.now()}")
 
     if _is_file(working_directory, "items.csv"):
