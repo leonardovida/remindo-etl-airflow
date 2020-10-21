@@ -3,22 +3,25 @@
 import configparser
 from datetime import datetime
 import json
-import logging
-import logging.config
+from loguru import logger
 import os
-from pathlib import Path
+from os.path import join, dirname, abspath
 
 # import time
 from remindo_api import client
 from remindo_api import collectdata
 
-# Setting up logger, Logger properties are defined in logging.ini file
-logging.config.fileConfig(os.path.join(Path(__file__).parents[1], "config/logging.ini"))
-logger = logging.getLogger(__name__)
 
 # Reading configurations
+# TODO: It should not be so complex
 config = configparser.ConfigParser()
-config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")))
+config.read_file(
+    open(
+        os.path.join(
+            join(dirname(dirname(dirname(abspath(__file__)))), "config", "prod.cfg")
+        )
+    )
+)
 
 # TODO: fix manual change when retrieval breaks
 # Either: 1) delete what was retrieved and restart

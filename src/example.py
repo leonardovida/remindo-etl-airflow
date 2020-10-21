@@ -1,38 +1,44 @@
 # from pyspark.sql.types import StringType
 # from pyspark.sql import functions as fn
 # from pyspark.sql import SparkSession
-import logging.config
+from logging.config import fileConfig
 import logging
 import configparser
 from pathlib import Path
 import time
 import os
-#import cx_Oracle
+from os.path import dirname, join
+
+# import cx_Oracle
 import datetime
 import pandas as pd
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.schema import CreateSchema, MetaData
-from sqlalchemy import *
-from sqlalchemy.sql import *
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
+# from sqlalchemy.schema import CreateSchema, MetaData
+# from sqlalchemy import *
+# from sqlalchemy.sql import *
 
-from src.copy_module import RemindoCopyModule
-from src.warehouse import remindo_dwh_base
-from src.warehouse import remindo_dwh_classes
-from src.warehouse import remindo_warehouse_driver
+# from src.copy_module import RemindoCopyModule
+# from src.warehouse import base
+# from src.warehouse import remindo_dwh_classes
+# from src.warehouse import remindo_warehouse_driver
 
-#from warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
+# from warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
 
 # Setting up logger, Logger properties are defined in logging.ini file
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
+log_file_path = join(
+    dirname(dirname(os.path.abspath(__file__))), "config", "logging.ini"
+)
+fileConfig(log_file_path)
 logger = logging.getLogger()
 
 
 def main():
+
 #     rt = RemindoTransform()
 
 #     # # Modules in the project
@@ -63,15 +69,14 @@ def main():
 #     for file in files_in_working_zone:
 #         if file in modules.keys():
 #             modules[file]()
-    
-    # wrd = remindo_warehouse_driver.RemindoWarehouseDriver()
-    # wrd.test_conn()
-    # wrd.delete_staging_tables()
-    # wrd.setup_staging_tables()
-    # wrd.load_staging_tables()
-    # wrd.setup_warehouse_tables()
-    # wrd.upsert()
+
+# wrd = remindo_warehouse_driver.RemindoWarehouseDriver()
+# wrd.test_conn()
+# wrd.delete_staging_tables()
+# wrd.setup_staging_tables()
+# wrd.load_staging_tables()
+# wrd.setup_warehouse_tables()
+# wrd.upsert()
 
 if __name__ == "__main__":
     main()
-    

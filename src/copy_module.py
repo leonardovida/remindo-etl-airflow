@@ -1,12 +1,12 @@
 import shutil
 import logging
+from logging.config import fileConfig
 import configparser
 from pathlib import Path
 from os import listdir, remove
-from os.path import isfile, join
+from os.path import isfile, join, dirname, abspath
 
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
-logger = logging.getLogger()
+from loguru import logger
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
