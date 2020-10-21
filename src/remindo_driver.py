@@ -1,9 +1,10 @@
 # from pyspark.sql import SparkSession
 from pathlib import Path
 import time
-import logging
-import logging.config
 import configparser
+import sys
+
+from loguru import logger
 
 from src.remindo_transform import RemindoTransform
 from src.copy_module import RemindoCopyModule
@@ -12,9 +13,12 @@ from src.warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
 
-# Setting up logger, Logger properties are defined in logging.ini file
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
-logger = logging.getLogger()
+logger.add(
+    sys.stderr,
+    format="{time} {level} {exeception} {file} {message} {elapsed}",
+    level="INFO",
+)
+
 
 # TODO: finish the configuration
 # TODO: Create or eliminate the usage of Spark
@@ -78,8 +82,8 @@ def main():
     rwarehouse.delete_staging_tables()
     rwarehouse.setup_staging_tables()
     rwarehouse.load_staging_tables()
-    rwarehouse.setup_warehouse_tables()
-    rwarehouse.perform_upsert()
+    # rwarehouse.setup_warehouse_tables()
+    # rwarehouse.perform_upsert()
 
 
 if __name__ == "__main__":

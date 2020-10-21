@@ -14,21 +14,29 @@ from sqlalchemy.exc import SQLAlchemyError
 
 # from src.warehouse.remindo_dwh_base import Base
 from src.copy_module import RemindoCopyModule
-from src.warehouse.remindo_dwh_classes import (
-    Base,
-    Cluster,
-    Reliability,
-    Study,
-    Recipe,
-    Moment,
-    MomentResult,
-    Stat,
-    Item,
-)
+from src.warehouse.base import Base
+from src.warehouse.models.cluster import Cluster
+from src.warehouse.models.study import Study
+from src.warehouse.models.recipe import Recipe
+from src.warehouse.models.moment import Moment
+from src.warehouse.models.moment_result import MomentResult
+from src.warehouse.models.reliability import Reliability
+from src.warehouse.models.stat import Stat
+from src.warehouse.models.item import Item
+
+# from src.warehouse.remindo_dwh_classes import (
+#     Cluster,
+#     Reliability,
+#     Study,
+#     Recipe,
+#     Moment,
+#     MomentResult,
+#     Stat,
+#     Item,
+# )
 from src.warehouse.remindo_upsert import upsert
 
-logging.config.fileConfig(f"{Path(__file__).parents[1]}/logging.ini")
-logger = logging.getLogger()
+from loguru import logger
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/warehouse_config.cfg"))

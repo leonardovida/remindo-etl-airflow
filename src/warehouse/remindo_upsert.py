@@ -7,7 +7,7 @@ from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.inspection import inspect
 from sqlalchemy import select
-
+from loguru import logger
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/warehouse_config.cfg"))

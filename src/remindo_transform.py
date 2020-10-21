@@ -1,7 +1,11 @@
+import configparser
+import logging
+from logging.config import fileConfig
+from os.path import join, dirname, abspath
 from pathlib import Path
 import shutil
-import logging
-import configparser
+
+from loguru import logger
 
 # from pyspark.sql.types import StringType
 # from pyspark.sql import functions as fn
@@ -9,9 +13,6 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
-
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
-logger = logging.getLogger()
 
 # TODO: All the dates need to be validated
 # - if they are not valid then 0 or something that can be accepted
