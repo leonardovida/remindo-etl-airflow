@@ -32,7 +32,7 @@ class Reliability(Base):
         back_populates='reliability')
     moment_id = Column(Integer, ForeignKey(Moment.id, ondelete="CASCADE"))
 
-    extract_date = Column(String, nullable=False)
+    extract_date = Column(DateTime, nullable=False)
     job_run_id = Column(Integer)
 
     def __repr__(self):

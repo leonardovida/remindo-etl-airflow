@@ -1,7 +1,4 @@
 import configparser
-import logging
-from logging.config import fileConfig
-from os.path import join, dirname, abspath
 from pathlib import Path
 import shutil
 

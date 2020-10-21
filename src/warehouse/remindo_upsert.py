@@ -1,6 +1,5 @@
 import configparser
 from pathlib import Path
-import logging
 import warnings
 
 from sqlalchemy import MetaData, Table
@@ -19,7 +18,7 @@ warehouse_schema = config.get("WAREHOUSE", "SCHEMA")
 def upsert(engine, session, conn, table_name):
     """Upsert values from staging to warehouse"""
     name = str(table_name.__tablename__)
-    logging.debug(f"Performing upsert on table {name}")
+    logger.debug(f"Performing upsert on table {name}")
 
     # Select table in staging schema
     metadata_staging = MetaData(schema="staging_schema")
@@ -63,7 +62,7 @@ def delete_from(tab1, tab2, session):
 # using-sqlalchemy-on-postgresql
 def upsert_2(engine, schema, table_name, records=[]):
 
-    logging.debug(f"Performing upsert on table {table_name}")
+    logger.debug(f"Performing upsert on table {table_name}")
 
     metadata = MetaData(schema=schema)
     metadata.bind = engine

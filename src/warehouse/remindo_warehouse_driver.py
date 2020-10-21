@@ -1,6 +1,5 @@
 from collections import OrderedDict
 import configparser
-import logging
 from pathlib import Path
 import re
 import os

@@ -29,8 +29,7 @@ class Item(Base):
     response_candidateResponse = Column(Text)
     response_correctResponse = Column(Text)
 
-    # recipe_id = Column(Integer, ForeignKey(Recipe.id))
-    recipe_id = Column(Integer)
+    recipe_id = Column(Integer, ForeignKey(Recipe.id))
     moment_id = Column(Integer, ForeignKey(Moment.id))
 
     extract_date = Column(DateTime, nullable=False)
