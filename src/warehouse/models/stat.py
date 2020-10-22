@@ -1,7 +1,6 @@
 from sqlalchemy import Float, String, Integer, Column, DateTime
 from sqlalchemy.orm import relationship
 from src.warehouse.base import Base
-from src.warehouse.models.Item import association_table
 
 # from src.warehouse.models.moment import Moment
 # from src.warehouse.models.recipe import Recipe
