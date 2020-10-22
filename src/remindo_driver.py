@@ -10,18 +10,19 @@ from src.remindo_transform import RemindoTransform
 from src.copy_module import RemindoCopyModule
 from src.warehouse.remindo_warehouse_driver import RemindoWarehouseDriver
 
+# TODO: finish the configuration
+# TODO: Create or eliminate the usage of Spark
+
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/config.cfg"))
 
+# Add logger using loguru
 logger.add(
     sys.stderr,
     format="{time} {level} {exeception} {file} {message} {elapsed}",
     level="INFO",
 )
-
-
-# TODO: finish the configuration
-# TODO: Create or eliminate the usage of Spark
+logger.add("run_log_{time}.log", rotation="6 month", backtrace=True, diagnose=True)
 
 # def create_sparksession():
 #     return SparkSession.builder.master('yarn').appName("remindo") \
@@ -44,9 +45,9 @@ def main():
         "recipes.csv": rt.transform_recipes_dataset,
         "moments.csv": rt.transform_moments_dataset,
         "moment_results.csv": rt.transform_moment_results_dataset,
+        "reliabilities.csv": rt.transform_reliabilities,
         "stats.csv": rt.transform_stats_dataset,
         "items.csv": rt.transform_items_dataset,
-        "reliabilities.csv": rt.transform_reliabilities,
     }
 
     logger.info("Copying data from landing zone to working zone")
@@ -82,8 +83,8 @@ def main():
     rwarehouse.delete_staging_tables()
     rwarehouse.setup_staging_tables()
     rwarehouse.load_staging_tables()
-    # rwarehouse.setup_warehouse_tables()
-    # rwarehouse.perform_upsert()
+    rwarehouse.setup_warehouse_tables()
+    rwarehouse.perform_upsert()
 
 
 if __name__ == "__main__":

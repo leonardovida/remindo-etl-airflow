@@ -1,8 +1,6 @@
 import os
-import logging.config
-import logging
 import os.path
-from datetime import datetime, timedelta
+from datetime import timedelta
 from pathlib import Path
 import configparser
 
@@ -13,17 +11,12 @@ from airflow.utils.dates import days_ago
 
 from src.api.fetchdata import main
 
-# Setting up logger, Logger properties are defined in logging.ini file
-# logging.config.fileConfig(os.path.join(Path(__file__).parents[1], "config/logging.ini"))
-# logger = logging.getLogger(__name__)
-
 # Reading configurations
 config = configparser.ConfigParser()
 config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")))
 
 # TODO: use provide_context=True to provide to the fetching of data
 # the updated value of the time!
-
 
 default_args = {
     "owner": "airflow",
@@ -59,6 +52,3 @@ jobOperator = PythonOperator(
 endOperator = DummyOperator(task_id="stopExecution", dag=dag)
 
 startOperator >> jobOperator >> endOperator
-
-# if __name__ == "__main__":
-#     dag.cli()
