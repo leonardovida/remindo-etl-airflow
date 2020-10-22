@@ -1,9 +1,11 @@
-from sqlalchemy import Date, Float, String, Integer, Column, DateTime
-from sqlalchemy import ForeignKey
+from sqlalchemy import Float, String, Integer, Column, DateTime
+from sqlalchemy.orm import relationship
 from src.warehouse.base import Base
-from src.warehouse.models.moment import Moment
-from src.warehouse.models.recipe import Recipe
+from src.warehouse.models.Item import association_table
 
+# from src.warehouse.models.moment import Moment
+# from src.warehouse.models.recipe import Recipe
+# Need to connect stat and item
 
 class Stat(Base):
     __tablename__ = 'stats'

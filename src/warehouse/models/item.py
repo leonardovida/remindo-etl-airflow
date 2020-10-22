@@ -1,8 +1,10 @@
-from sqlalchemy import Date, Float, String, Integer, Boolean, Column, DateTime
+from sqlalchemy import Float, String, Integer, Boolean, Column, DateTime, Table
 from sqlalchemy import ForeignKey, Text
+from sqlalchemy.orm import relationship
 from src.warehouse.base import Base
-from src.warehouse.models.recipe import Recipe
-from src.warehouse.models.moment import Moment
+# from src.warehouse.models.recipe import Recipe
+# from src.warehouse.models.moment import Moment
+from src.warehouse.models.Stat import Stat
 
 
 class Item(Base):
@@ -47,8 +49,3 @@ class Item(Base):
             self.extract_date,
             self.job_run_id
         )
-
-# Table('association', Base.metadata,
-#     Column('items_item_id', String(50), ForeignKey('stats.item_identifier')),
-#     Column('stats_item_id', String(50), ForeignKey('items.item_identifier'))
-# )
