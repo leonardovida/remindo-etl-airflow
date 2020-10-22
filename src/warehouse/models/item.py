@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 from src.warehouse.base import Base
 # from src.warehouse.models.recipe import Recipe
 # from src.warehouse.models.moment import Moment
-from src.warehouse.models.Stat import Stat
 
 
 class Item(Base):
