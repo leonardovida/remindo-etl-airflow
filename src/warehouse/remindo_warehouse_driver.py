@@ -3,10 +3,12 @@ import configparser
 from pathlib import Path
 import re
 import os
+
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
+from loguru import logger
 
 # import cx_Oracle
 # from contextlib import contextmanager
@@ -34,8 +36,6 @@ from src.warehouse.models.item import Item
 #     Item,
 # )
 from src.warehouse.remindo_upsert import upsert
-
-from loguru import logger
 
 config = configparser.ConfigParser()
 config.read_file(open(f"{Path(__file__).parents[0]}/warehouse_config.cfg"))

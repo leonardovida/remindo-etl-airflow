@@ -60,10 +60,11 @@ class Moment(Base):
         back_populates="moment",
         cascade="all, delete-orphan",
         passive_deletes=True,
+        uselist=False,
     )
 
-    stats = relationship("Stat", cascade="all, delete-orphan")
-    items = relationship("Item", cascade="all, delete-orphan")
+    # stats = relationship("Stat", cascade="all, delete-orphan")
+    # items = relationship("Item", cascade="all, delete-orphan")
 
     extract_date = Column(DateTime, nullable=False)
     job_run_id = Column(Integer)

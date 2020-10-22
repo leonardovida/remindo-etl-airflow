@@ -1,8 +1,9 @@
-from sqlalchemy import Date, Float, String, Integer, Column, DateTime
-from sqlalchemy import ForeignKey
+from sqlalchemy import Float, String, Integer, Column, DateTime
 from src.warehouse.base import Base
-from src.warehouse.models.moment import Moment
-from src.warehouse.models.recipe import Recipe
+
+# from src.warehouse.models.moment import Moment
+# from src.warehouse.models.recipe import Recipe
+# Need to connect stat and item
 
 
 class Stat(Base):
@@ -26,8 +27,10 @@ class Stat(Base):
     total = Column(Integer)
     answered = Column(Integer)
 
-    recipe_id = Column(Integer, ForeignKey(Recipe.id))
-    moment_id = Column(Integer, ForeignKey(Moment.id))
+    # recipe_id = Column(Integer, ForeignKey(Recipe.id))
+    recipe_id = Column(Integer)
+    # moment_id = Column(Integer, ForeignKey(Moment.id))
+    moment_id = Column(Integer)
 
     extract_date = Column(DateTime, nullable=False)
     job_run_id = Column(Integer)

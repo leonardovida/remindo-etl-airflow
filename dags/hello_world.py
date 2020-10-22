@@ -1,20 +1,8 @@
-import itertools
-import os.path
-import shutil
-from collections import Counter
-import configparser
-from csv import DictWriter, writer
-import json
 from datetime import datetime, timedelta
-from pathlib import Path
 
 from airflow import DAG
-from airflow.models import Variable
-from airflow.operators.email_operator import EmailOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
-
-import pandas as pd
 
 # TODO: fix manual change when retrieval breaks
 # meaning that dates need to be automatically changed or fixed already
@@ -22,9 +10,11 @@ import pandas as pd
 # select only the missing recipes and moments and continue
 # TODO: display total time at the end of the retrieval
 
+
 def print_hello():
     print("Hello world ran.")
-    return("Hello world!")
+    return "Hello world!"
+
 
 default_args = {
     "owner": "airflow",
@@ -46,16 +36,8 @@ dag = DAG(
     catchup=False,
 )
 
-dummy_operator = DummyOperator(
-    task_id='dummy_task',
-    retries = 3,
-    dag=dag
-)
+dummy_operator = DummyOperator(task_id="dummy_task", retries=3, dag=dag)
 
-hello_world = PythonOperator(
-    task_id="hello_task",
-    python_callable=print_hello,
-    dag=dag
-)
+hello_world = PythonOperator(task_id="hello_task", python_callable=print_hello, dag=dag)
 
 dummy_operator >> hello_world

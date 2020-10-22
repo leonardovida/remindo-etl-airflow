@@ -17,7 +17,7 @@ class Recipe(Base):
     type = Column(String(50))
     max_retries = Column(Integer)
     exam_duration = Column(Integer)
-    tools = Column(String(100))
+    tools = Column(String(500))
 
     # TODO: These are to test out
     practice_repeat_until = Column(Integer)
@@ -37,7 +37,7 @@ class Recipe(Base):
     extra_time = Column(Boolean)
 
     # TODO: If null there are problems, but there shoulnd't be
-    apicall_since = Column(Float)
+    apicall_since = Column(String(20))
     apicall_study_id = Column(String(50))
     apicall_full = Column(String(10))
     apicall_recipe_id = Column(Integer)
@@ -65,10 +65,11 @@ class Recipe(Base):
         back_populates="recipe",
         cascade="all, delete-orphan",
         passive_deletes=True,
+        uselist=False,
     )
 
-    stats = relationship("Stat", cascade="all, delete")
-    items = relationship("Item", cascade="all, delete")
+    # stats = relationship("Stat", cascade="all, delete")
+    # items = relationship("Item", cascade="all, delete")
 
     extract_date = Column(Date, nullable=False)
     job_run_id = Column(Integer)
