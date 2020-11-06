@@ -3,6 +3,7 @@ airflow.db
 /airflow.db
 logs/**/*
 logs/**
+airflow-webserver.pid
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
