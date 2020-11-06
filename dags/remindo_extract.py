@@ -1,6 +1,6 @@
 import os
 import os.path
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 import configparser
 
@@ -21,7 +21,7 @@ config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": days_ago(7),
+    "start_date": datetime(2017, 3, 20),
     "email": ["l.j.vida@uu.nl"],
     "email_on_failure": False,
     "email_on_retry": False,
@@ -34,8 +34,6 @@ dag = DAG(
     "extract_pipeline",
     default_args=default_args,
     description="Extract data from Remindo to landing zone",
-    # schedule_interval=None,
-    dagrun_timeout=timedelta(minutes=1),
     schedule_interval=timedelta(minutes=5),
     max_active_runs=1,
 )

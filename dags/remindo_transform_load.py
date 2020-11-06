@@ -9,6 +9,7 @@ from airflow.operators.python_operator import PythonOperator
 
 from src.remindo_driver import main
 
+# Reading configurations
 config = configparser.ConfigParser()
 config.read_file(open(os.path.join(Path(__file__).parents[1], "config/prod.cfg")))
 
@@ -38,9 +39,7 @@ dag = DAG(
 )
 
 startOperator = DummyOperator(task_id="BeginExecution", dag=dag)
-
 jobOperator = PythonOperator(task_id="TransformLoadJob", python_callable=main, dag=dag)
-
 endOperator = DummyOperator(task_id="StopExecution", dag=dag)
 
 startOperator >> jobOperator >> endOperator

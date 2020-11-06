@@ -22,7 +22,7 @@ logger.add(
     format="{time} {level} {exeception} {file} {message} {elapsed}",
     level="INFO",
 )
-logger.add("run_log_{time}.log", rotation="6 month", backtrace=True, diagnose=True)
+# logger.add("run_log_{time}.log", rotation="6 month", backtrace=True, diagnose=True)
 
 # def create_sparksession():
 #     return SparkSession.builder.master('yarn').appName("remindo") \
