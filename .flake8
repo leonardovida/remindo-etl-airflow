@@ -1,5 +1,6 @@
 # .flake8
 [flake8]
+# D & DAR: for docstring in google style still not activated
 select = BLK,C,E,F,W,I,S
 max-complexity = 10
 ignore = E203,W503,E501
