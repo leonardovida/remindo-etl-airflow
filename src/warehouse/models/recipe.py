@@ -6,6 +6,8 @@ from src.warehouse.models.study import Study
 
 
 class Recipe(Base):
+    """Database class for recipes table"""
+
     __tablename__ = "recipes"
     __table_args__ = {"schema": "staging_schema"}
 

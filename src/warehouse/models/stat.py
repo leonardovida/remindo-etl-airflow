@@ -7,6 +7,8 @@ from src.warehouse.base import Base
 
 
 class Stat(Base):
+    """Database class for statistics table"""
+
     __tablename__ = 'stats'
     __table_args__ = {'schema': 'staging_schema'}
 

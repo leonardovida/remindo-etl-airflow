@@ -8,6 +8,8 @@ from src.warehouse.models.moment import Moment
 
 
 class MomentResult(Base):
+    """Database class for moments results table"""
+    
     __tablename__ = 'moments_results'
     __table_args__ = {'schema': 'staging_schema'}
 
@@ -57,9 +59,9 @@ class MomentResult(Base):
     job_run_id = Column(Integer)
 
     def __repr__(self):
-        return "<Moment(id='%s', moment_id='%s', \
+        return "<Moment(result_id='%s', moment_id='%s', \
             recipe_id='%s', extract_date='%s', job_run_id='%s')>" % (
-            self.id,
+            self.result_id,
             self.moment_id,
             self.recipe_id,
             self.extract_date,

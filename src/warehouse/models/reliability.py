@@ -7,6 +7,8 @@ from src.warehouse.models.recipe import Recipe
 
 
 class Reliability(Base):
+    """Database class for reliabilities table"""
+
     __tablename__ = 'reliabilities'
     __table_args__ = {'schema': 'staging_schema'}
 

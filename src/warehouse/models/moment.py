@@ -8,6 +8,8 @@ from src.warehouse.models.recipe import Recipe
 
 
 class Moment(Base):
+    """Database class for moments table"""
+
     __tablename__ = "moments"
     __table_args__ = {"schema": "staging_schema"}
 

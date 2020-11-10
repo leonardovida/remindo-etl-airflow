@@ -5,6 +5,8 @@ from src.warehouse.base import Base
 
 
 class Study(Base):
+    """Database class for studies table"""
+
     __tablename__ = "studies"
     __table_args__ = {"schema": "staging_schema"}
 

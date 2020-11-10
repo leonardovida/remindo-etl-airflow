@@ -7,6 +7,8 @@ from src.warehouse.base import Base
 
 
 class Item(Base):
+    """Database class for items table"""
+    
     __tablename__ = 'items'
     __table_args__ = {'schema': 'staging_schema'}
 

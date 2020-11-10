@@ -3,6 +3,8 @@ from src.warehouse.base import Base
 
 
 class Cluster(Base):
+    """Database class for clusters table"""
+
     __tablename__ = "clusters"
     __table_args__ = {"schema": "staging_schema"}
 
